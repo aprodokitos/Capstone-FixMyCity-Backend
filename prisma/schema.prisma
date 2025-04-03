@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserLevel {
+  id          String    @id
+  name        String    @unique
+  user        User[]      @relation("userHasLevel")
+}
+
+model User {
+  id_user       String   @id @default(uuid()) 
+  user_name     String
+  user_birthday DateTime
+  user_email    String   @unique
+  user_password String
+  user_profile   String?
+  created_at     DateTime
+  updated_at     DateTime @updatedAt
+  id_level       String     
+
+  level          UserLevel @relation("userHasLevel", fields:[id_level], references: [id] )
+  store          Store?      @relation("userHasStore")
+  transactions   Transaction[] @relation("UserTransaction")
+  carts          Cart[]  @relation("UserCart")
+}
+
+model Store {
+  id_store     String   @id @default(uuid())
+  id_user      String @unique
+  store_name  String
+  store_picture String?  
+  store_description String?
+  created_at    DateTime
+  updated_at    DateTime  @updatedAt
+
+  user          User  @relation("userHasStore", fields: [id_user], references: [id_user])
+  product       Product[]   @relation("storeHasProducts")
+}
+
+model Product {
+  id_product        String   @id @default(uuid())
+  id_store          String
+  product_thumbnail String
+  product_name      String
+  product_description String?
+  created_at         DateTime
+  updated_at         DateTime   @updatedAt
+
+  store               Store   @relation("storeHasProducts", fields: [id_store], references: [id_store])
+  ProductCategory ProductCategory[] @relation("ProductCategory")
+  variations         ProductVariation[] @relation("ProductVariation")
+}
+
+model Category {
+  id_category   String    @id @default(uuid())
+  category_name String
+
+  ProductCategory ProductCategory[] @relation("CategoryProduct")
+}
+
+model ProductCategory {
+  id_product   String
+  id_category   String
+
+  product       Product  @relation("ProductCategory", fields: [id_product], references: [id_product])
+  category      Category @relation("CategoryProduct", fields: [id_category], references: [id_category])
+
+  @@id([id_product, id_category])
+}
+
+model ProductVariation {
+  id_variation    String  @id @default(uuid())
+  id_product      String
+  variation_name  String
+  variation_price Int
+  product          Product @relation("ProductVariation", fields: [id_product], references: [id_product])
+  TransactionProductDetail TransactionProductDetail[] @relation("TransactionProducts")
+  CartProductDetail   Cart[] @relation("CartProduct")
+}
+
+model Cart {
+  id_user              String
+  id_products_variation String
+  quantity             Int
+  added_at             DateTime
+  edited_at            DateTime
+  user                 User       @relation("UserCart", fields: [id_user], references: [id_user])
+  productVariation     ProductVariation @relation("CartProduct", fields: [id_products_variation], references: [id_variation])
+
+  @@id([id_user, id_products_variation])
+}
+
+model Transaction {
+  id_transaction String    @id @default(uuid())
+  id_user        String
+  created_at     DateTime
+  ended_at       DateTime
+  status         TransactionStatus
+  user           User      @relation("UserTransaction", fields: [id_user], references: [id_user])
+  transactionDetails TransactionProductDetail[] @relation("TransactionDetails")
+}
+
+model TransactionProductDetail {
+  id_transaction String
+  id_variation  String
+
+  transaction Transaction @relation("TransactionDetails", fields: [id_transaction], references: [id_transaction])
+  productVariation ProductVariation @relation("TransactionProducts", fields: [id_variation], references: [id_variation])
+
+  @@id([id_transaction, id_variation])
+}
+
+enum TransactionStatus {
+  pending
+  fail
+  success
+}
