@@ -20,13 +20,14 @@ model User {
   user_email      String      @unique
   user_password   String
   user_profile    String?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime   @updatedAt
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
   deleted_at      DateTime?
 
   role_id         String
   role            Role        @relation(fields: [role_id], references: [id_role])
   reports         Report[]
+  comments        Comment[]   
 }
 
 model Role {
@@ -35,24 +36,35 @@ model Role {
   users           User[]   
 }
 
-model Report {
-  id_report       String   @id @default(uuid())
-  title           String
-  description     String
-  photo_url       String
-  location        String
-  status          ReportStatus @default(PENDING)
-  created_at      DateTime     @default(now())
-
-  // Relasi ke User
-  user_id         String
-  user            User         @relation(fields: [user_id], references: [id_user])
-}
-
 enum ReportStatus {
   PENDING
   DIPROSES
   SELESAI
 }
+
+model Report {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String
+  location    String
+  imageUrl    String?
+  status      ReportStatus  @default(PENDING)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id_user])
+  comments    Comment[]
+  createdAt   DateTime      @default(now())
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  imageUrl  String?
+  reportId  Int
+  userId    String
+  user      User     @relation(fields: [userId], references: [id_user])
+  report    Report   @relation(fields: [reportId], references: [id])
+  createdAt DateTime @default(now())
+}
+
 
 
