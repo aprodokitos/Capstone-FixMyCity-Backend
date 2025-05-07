@@ -6,7 +6,7 @@ const express = require('express')
 
 const Router = express.Router()
 
-Router.use('/user', userRoutes);
+Router.use(userRoutes);
 Router.use(reportRoutes);
 Router.use(commentRoutes);
 
