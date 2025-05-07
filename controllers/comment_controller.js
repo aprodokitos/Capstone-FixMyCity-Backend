@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// CREATE
 const addComment = async (req, res) => {
   try {
     const { text, reportId, userId } = req.body;
@@ -21,18 +22,35 @@ const addComment = async (req, res) => {
   }
 };
 
-const getCommentsByReport = async (req, res) => {
+// READ ALL
+const getAllComments = async (req, res) => {
   try {
-    const { reportId } = req.params;
-    const comments = await prisma.comment.findMany({
-      where: { reportId: parseInt(reportId) }
-    });
+    const comments = await prisma.comment.findMany();
     res.json(comments);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+// READ BY ID
+const getCommentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const comment = await prisma.comment.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!comment) {
+      return res.status(404).json({ error: 'Komentar tidak ditemukan' });
+    }
+
+    res.json(comment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// UPDATE
 const updateComment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -53,11 +71,12 @@ const updateComment = async (req, res) => {
   }
 };
 
+// DELETE
 const deleteComment = async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.comment.delete({ where: { id: parseInt(id) } });
-    res.json({ message: 'Comment deleted' });
+    res.json({ message: 'Komentar berhasil dihapus' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -65,7 +84,8 @@ const deleteComment = async (req, res) => {
 
 module.exports = {
   addComment,
-  getCommentsByReport,
+  getAllComments,
+  getCommentById,
   updateComment,
   deleteComment
 };

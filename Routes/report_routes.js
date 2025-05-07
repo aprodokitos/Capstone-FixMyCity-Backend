@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const reportController = require('../controllers/report_controllers');
+const reportController = require('../controllers/report_controller');
 const upload = require('../Middlewares/upload_middleware');
 
 router.post('/', upload.single('image'), reportController.createReport);

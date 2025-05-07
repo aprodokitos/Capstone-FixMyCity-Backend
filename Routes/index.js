@@ -11,5 +11,3 @@ Router.use('/reports', reportRoutes);
 Router.use('/comments', commentRoutes);
 
 module.exports = Router
-
-app.use('/uploads', express.static('public/uploads'));
