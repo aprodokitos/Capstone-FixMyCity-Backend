@@ -7,7 +7,7 @@ const express = require('express')
 const Router = express.Router()
 
 Router.use('/user', userRoutes);
-Router.use('/reports', reportRoutes);
-Router.use('/comments', commentRoutes);
+Router.use(reportRoutes);
+Router.use(commentRoutes);
 
 module.exports = Router
