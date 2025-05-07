@@ -26,7 +26,15 @@ const addComment = async (req, res) => {
 const getAllComments = async (req, res) => {
   try {
     const comments = await prisma.comment.findMany();
-    res.json(comments);
+
+    const updatedComments = comments.map(comment => {
+      if (comment.imageUrl) {
+        comment.imageUrl = `${req.protocol}://${req.get('host')}${comment.imageUrl}`;
+      }
+      return comment;
+    });
+
+    res.json(updatedComments);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -36,12 +44,21 @@ const getAllComments = async (req, res) => {
 const getCommentById = async (req, res) => {
   try {
     const { id } = req.params;
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return res.status(400).json({ error: "ID tidak valid" });
+    }
+
     const comment = await prisma.comment.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: parsedId },
     });
 
     if (!comment) {
       return res.status(404).json({ error: 'Komentar tidak ditemukan' });
+    }
+
+    if (comment.imageUrl) {
+      comment.imageUrl = `${req.protocol}://${req.get('host')}${comment.imageUrl}`;
     }
 
     res.json(comment);

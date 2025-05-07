@@ -26,13 +26,22 @@ const createReport = async (req, res) => {
 const getReportById = async (req, res) => {
   try {
     const { id } = req.params;
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return res.status(400).json({ error: "ID tidak valid" });
+    }
+
     const report = await prisma.report.findUnique({
-      where: { id: parseInt(id) }, 
+      where: { id: parsedId },
       include: { comments: true },
     });
 
     if (!report) {
       return res.status(404).json({ error: 'Laporan tidak ditemukan' });
+    }
+
+    if (report.imageUrl) {
+      report.imageUrl = `${req.protocol}://${req.get('host')}${report.imageUrl}`;
     }
 
     res.json(report);
@@ -45,11 +54,20 @@ const getReportById = async (req, res) => {
 const getAllReports = async (req, res) => {
   try {
     const reports = await prisma.report.findMany({ include: { comments: true } });
-    res.json(reports);
+
+    const updatedReports = reports.map(report => {
+      if (report.imageUrl) {
+        report.imageUrl = `${req.protocol}://${req.get('host')}${report.imageUrl}`;
+      }
+      return report;
+    });
+
+    res.json(updatedReports);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 const updateReport = async (req, res) => {
   try {
