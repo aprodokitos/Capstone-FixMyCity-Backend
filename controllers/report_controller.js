@@ -27,7 +27,7 @@ const getReportById = async (req, res) => {
   try {
     const { id } = req.params;
     const report = await prisma.report.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(id) }, 
       include: { comments: true },
     });
 
