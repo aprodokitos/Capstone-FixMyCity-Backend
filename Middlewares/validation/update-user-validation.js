@@ -31,8 +31,9 @@ function validateUpdateUser(req, res, next) {
       message: `Data user tidak valid: ${details}`,
     });
   }
-
+ 
   next();
-}
+} 
 
 module.exports = validateUpdateUser;
+ 

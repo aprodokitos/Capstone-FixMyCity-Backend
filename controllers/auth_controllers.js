@@ -6,7 +6,13 @@ const prisma = new PrismaClient();
 
 async function registerUser(req, res) {
   try {
-    const { user_name, user_birthday, user_email, user_password, isLoginAfterRegister } = req.body;
+    const {
+      user_name,
+      user_birthday,
+      user_email,
+      user_password,
+      isLoginAfterRegister,
+    } = req.body;
 
     if (!user_name || !user_email || !user_password) {
       throw new Error("Username, email, dan password harus ada");
@@ -17,13 +23,15 @@ async function registerUser(req, res) {
     });
 
     if (dataUser) {
-      throw new Error("Email sudah ada. Masuk atau gunakan email lain untuk mendaftar");
+      throw new Error(
+        "Email sudah ada. Masuk atau gunakan email lain untuk mendaftar"
+      );
     }
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(user_password, saltRounds);
 
-    const role = 'user';
+    const role = "user";
 
     const newUser = await prisma.user.create({
       data: {
@@ -36,10 +44,10 @@ async function registerUser(req, res) {
         role: {
           connectOrCreate: {
             where: {
-              role_name: 'user', // Pastikan role dengan nama 'user' ada
+              role_name: "user", // Pastikan role dengan nama 'user' ada
             },
             create: {
-              role_name: 'user', // Jika belum ada, buat role baru dengan nama 'user'
+              role_name: "user", // Jika belum ada, buat role baru dengan nama 'user'
             },
           },
         },
@@ -47,14 +55,21 @@ async function registerUser(req, res) {
     });
 
     if (isLoginAfterRegister) {
-      const token = jwt.sign({ id_user: newUser.id_user, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+      const token = jwt.sign(
+        { id_user: newUser.id_user, role: newUser.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
       return res
         .status(201)
         .cookie("token", token, { signed: true, httpOnly: true })
         .json({
           success: true,
           message: "Successfully registered and logged in",
-          data: { user_name: newUser.user_name, user_email: newUser.user_email },
+          data: {
+            user_name: newUser.user_name,
+            user_email: newUser.user_email,
+          },
           token,
         });
     }
@@ -76,6 +91,13 @@ async function login(req, res) {
   try {
     const { email, password } = req.body;
 
+    // Validasi input
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email dan password harus diisi." });
+    }
+
     let dataUser = await prisma.user.findUnique({
       where: { user_email: email },
       select: {
@@ -84,39 +106,41 @@ async function login(req, res) {
         user_birthday: true,
         user_email: true,
         user_password: true,
-        level: {
-          select: { name: true },
+        role: {
+          select: { role_name: true },
         },
-        deleted_at: true, // Pastikan 'deleted_at' ada di sini
+        deleted_at: true,
       },
     });
 
     if (!dataUser) {
-      throw new Error("Email not found");
+      throw new Error("Email tidak ditemukan");
     }
 
     // Pastikan user tidak dihapus (soft delete)
     if (dataUser.deleted_at !== null) {
-      throw new Error("User has been deleted and cannot log in");
+      throw new Error("User  telah dihapus dan tidak dapat login");
     }
 
     const match = await bcrypt.compare(password, dataUser.user_password);
     if (!match) {
-      throw new Error("Password not valid");
+      throw new Error("Password tidak valid");
     }
 
     const id_user = dataUser.id_user;
-    const userLevel = dataUser.level.name;
+    const userRole = dataUser.role.role_name;
+
+    console.log("JWT SIGNING KEY:", process.env.JWT_SECRET_KEY); // <<< Tambahkan ini
 
     const token = jwt.sign(
-      { id_user, role: userLevel },
-      process.env.JWT_SECRET,
+      { id_user, role: userRole },
+      process.env.JWT_SECRET_KEY, // Pastikan ini sesuai
       { expiresIn: "1h" }
     );
 
     // tidak menyertakan password pada response
     delete dataUser.user_password;
-    dataUser.level = userLevel;
+    dataUser.role = userRole;
 
     res
       .cookie("token", token, {
@@ -127,7 +151,7 @@ async function login(req, res) {
       .status(200)
       .json({
         success: true,
-        message: "Successfully logged in",
+        message: "Berhasil login",
         data: dataUser,
         token,
       });
@@ -135,11 +159,10 @@ async function login(req, res) {
     console.log("login error:", error.message);
     res.status(400).json({
       success: false,
-      message: error.message || "Failed to login.",
+      message: error.message || "Gagal login.",
     });
   }
 }
-
 
 async function logout(req, res, next) {
   try {
@@ -160,5 +183,4 @@ async function logout(req, res, next) {
   }
 }
 
-
-module.exports = { registerUser , login, logout};
+module.exports = { registerUser, login, logout };

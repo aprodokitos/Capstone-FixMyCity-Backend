@@ -13,7 +13,8 @@ async function getAllUser(req, res) {
       throw new Error("Data User tidak ditemukan");
     }
 
-    res.status(200).json({ success: true, data: allUserData });
+    res.status(200).json({ success: true, data: allUserData,  });
+    
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
