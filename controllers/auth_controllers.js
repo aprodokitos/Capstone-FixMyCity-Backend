@@ -166,7 +166,17 @@ async function login(req, res) {
 
 async function logout(req, res, next) {
   try {
-    // Clear the token by setting it to expire in the past
+    // Check if token exists in cookies
+    const token = req.signedCookies.token;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "No active session found",
+      });
+    }
+
+    // Clear the token
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production" || false,

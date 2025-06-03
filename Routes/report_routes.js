@@ -9,4 +9,4 @@ router.get('/report/:id', reportController.getReportById);
 router.put('/report/:id', upload.single('image'), verifyToken ,reportController.updateReport); 
 router.delete('/report/:id', reportController.deleteReport);
 
-module.exports = router; 
+module.exports = router;  

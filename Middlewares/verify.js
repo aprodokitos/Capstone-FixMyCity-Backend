@@ -1,11 +1,7 @@
 // file Middlewares/verify.js
 const jwt = require("jsonwebtoken");
-// --- Tambahkan import PrismaClient di sini ---
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient(); // Buat satu instance PrismaClient di sini
-
-// Mungkin perlu import dotenv di sini jika belum yakin sudah terload secara global
-// require('dotenv').config(); // Biasanya sudah terload di index.js, tapi bisa ditambahkan di sini jika ragu
+const prisma = new PrismaClient(); 
 
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];

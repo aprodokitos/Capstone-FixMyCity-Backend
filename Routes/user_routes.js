@@ -12,7 +12,7 @@ const {
 
 const validateUpdateUser = require("../Middlewares/validation/update-user-validation");
 const validateCreateUser = require("../Middlewares/validation/create-user-validation");
-const { registerUser, login } = require("../controllers/auth_controllers");
+const { registerUser, login , logout} = require("../controllers/auth_controllers");
 const router = express.Router();
 const verifyToken = require("../Middlewares/verify"); // verifyToken sepertinya tidak dipakai di route yang ada saat ini di file ini
 
@@ -26,7 +26,8 @@ router.delete("/user/:id", deleteUserById);
 
 router.put("/user/:id", validateUpdateUser, updateUserById); // Jika route ini juga menggunakan form-data tanpa file, tambahkan upload.none() juga
 
-// Tambahkan upload.none() di route login
 router.post("/user/login", upload.none(), login );
+
+router.post("/user/logout", logout);
 
 module.exports = router;
