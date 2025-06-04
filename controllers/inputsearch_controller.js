@@ -15,23 +15,22 @@ const inputsearchBytitle = async (req, res) => {
     const reports = await prisma.report.findMany({
       where: {
         title: {
-          // Changed from report_title to title
           contains: search,
           mode: "insensitive",
         },
       },
       select: {
-        id: true, // Changed from id_report
-        title: true, // Changed from report_title
-        description: true, // Changed from report_desc
-        createdAt: true, // Changed from report_date
-        status: true, // Changed from report_status
-        location: true, // Changed from report_location
-        imageUrl: true, // Changed from report_image
+        id: true, 
+        title: true, 
+        description: true, 
+        createdAt: true, 
+        status: true, 
+        location: true, 
+        imageUrl: true, 
         user: {
           select: {
-            user_name: true, // Changed from user_name
-            user_email: true, // Changed from user_email
+            user_name: true, 
+            user_email: true, 
           },
         },
       },
@@ -73,23 +72,22 @@ const inputsearchBylocation = async (req, res) => {
     const reports = await prisma.report.findMany({
       where: {
         location: {
-          // Changed from report_title to title
           contains: search,
           mode: "insensitive",
         },
       },
       select: {
-        id: true, // Changed from id_report
-        title: true, // Changed from report_title
-        description: true, // Changed from report_desc
-        createdAt: true, // Changed from report_date
-        status: true, // Changed from report_status
-        location: true, // Changed from report_location
-        imageUrl: true, // Changed from report_image
+        id: true, 
+        title: true, 
+        description: true, 
+        createdAt: true, 
+        status: true, 
+        location: true, 
+        imageUrl: true, 
         user: {
           select: {
-            user_name: true, // Changed from user_name
-            user_email: true, // Changed from user_email
+            user_name: true, 
+            user_email: true, 
           },
         },
       },
@@ -128,13 +126,12 @@ const inputsearchByStatus = async (req, res) => {
       });
     }
 
-    // Convert search to uppercase to match enum format
     const searchStatus = search.toUpperCase();
 
     const reports = await prisma.report.findMany({
       where: {
         status: {
-          equals: searchStatus, // Use equals instead of contains for enum
+          equals: searchStatus, 
         },
       },
       select: {
@@ -216,8 +213,8 @@ const inputsearchByuser = async (req, res) => {
         imageUrl: true,
         user: {
           select: {
-            user_name: true,    // Changed from user_name
-            user_email: true,   // Changed from user_email
+            user_name: true, 
+            user_email: true,   
           },
         },
       },
