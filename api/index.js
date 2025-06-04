@@ -9,7 +9,7 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require('fs');
 const path = require('path');
 
-const allowedOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
+const allowedOrigin = process.env.FRONTEND_ORIGIN || "https://capstone-fixmycity-p7qrmpb0a-tyesds-projects.vercel.app/";
 
 dotenv.config();
 

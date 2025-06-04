@@ -12,15 +12,219 @@
         }
     ],
     "paths": {
-        "/report": {
-            "get": {
-            },
-            "post": {
-            },
-            "put": {
-            },
-            "delete": {
-            }
+    "/report": {
+      "get": {
+        "summary": "Get all reports",
+        "tags": ["Report"],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
         }
+      },
+      "post": {
+        "summary": "Create a report",
+        "tags": ["Report"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Report created"
+          }
+        }
+      }
+    },
+    "/report/{id}": {
+      "get": {
+        "summary": "Get report by ID",
+        "tags": ["Report"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update report",
+        "tags": ["Report"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete report",
+        "tags": ["Report"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/comment": {
+      "get": {
+        "summary": "Get all comments",
+        "tags": ["Comment"],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a comment",
+        "tags": ["Comment"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created"
+          }
+        }
+      }
+    },
+    "/comment/{id}": {
+      "get": {
+        "summary": "Get comment by ID",
+        "tags": ["Comment"]
+      },
+      "put": {
+        "summary": "Update comment",
+        "tags": ["Comment"]
+      },
+      "delete": {
+        "summary": "Delete comment",
+        "tags": ["Comment"]
+      }
+    },
+    "/user/login": {
+      "post": {
+        "summary": "User login",
+        "tags": ["Auth"]
+      }
+    },
+    "/user/logout": {
+      "post": {
+        "summary": "User logout",
+        "tags": ["Auth"]
+      }
+    },
+    "/user/new": {
+      "post": {
+        "summary": "Register new user",
+        "tags": ["User"]
+      }
+    },
+    "/user/all": {
+      "get": {
+        "summary": "Get all users",
+        "tags": ["User"]
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "tags": ["User"]
+      },
+      "put": {
+        "summary": "Update user",
+        "tags": ["User"]
+      },
+      "delete": {
+        "summary": "Delete user",
+        "tags": ["User"]
+      }
+    },
+    "/search/title": {
+      "get": {
+        "summary": "Search by title",
+        "tags": ["Search"]
+      }
+    },
+    "/search/location": {
+      "get": {
+        "summary": "Search by location",
+        "tags": ["Search"]
+      }
+    },
+    "/search/status": {
+      "get": {
+        "summary": "Search by status",
+        "tags": ["Search"]
+      }
+    },
+    "/search/user": {
+      "get": {
+        "summary": "Search by user",
+        "tags": ["Search"]
+      }
     }
+  },
+  "tags": [
+    { "name": "Report" },
+    { "name": "Comment" },
+    { "name": "User" },
+    { "name": "Auth" },
+    { "name": "Search" }
+  ]
 }
