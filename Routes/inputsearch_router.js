@@ -7,4 +7,4 @@ router.get('/search/location', inputsearchBylocation);
 router.get('/search/status', inputsearchByStatus);
 router.get('/search/user', inputsearchByuser);
 
-module.exports = router; 
+module.exports = router;
