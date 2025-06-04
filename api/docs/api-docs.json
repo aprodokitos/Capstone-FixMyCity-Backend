@@ -3,16 +3,16 @@
     "info": {
         "title": "FixMyCity Docs",
         "version": "1.0",
-        "description": "API ini digunakan untuk bagian search pada website FixMyCity yang dikembangkan oleh Kelompok 9 Capstone Project."
+        "description": "API ini digunakan untuk website FixMyCity yang dikembangkan oleh Kelompok 9 Capstone Project."
     },
     "servers": [
         {
-        "url": "",
+        "url": "http://localhost:3000",
         "description": ""
         }
     ],
     "paths": {
-        "/search": {
+        "/report": {
             "get": {
             },
             "post": {
