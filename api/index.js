@@ -11,7 +11,6 @@ const path = require("path");
 const app = express();
 
 const allowedOrigins = process.env.FRONTEND_ORIGIN?.split(",") || [
-  "http://localhost:5173",
   "https://capstone-fixmycity.vercel.app",
 ];
 
