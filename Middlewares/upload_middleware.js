@@ -1,6 +1,4 @@
-// file Middlewares/upload_middleware.js
 const multer = require("multer");
-const path = require("path"); // Path mungkin tidak digunakan, tapi biarkan saja
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
@@ -25,12 +23,8 @@ const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
-  limits: { fileSize: 100 * 1024 * 1024 }, // Sesuaikan batas ukuran
+  limits: { fileSize: 100 * 1024 * 1024 }, 
   fileFilter,
 });
 
-// --- EKSPOR LANGSUNG INSTANCE MULTER ---
 module.exports = upload;
-// -------------------------------------
-
-// Fungsi uploadSingleImage, array, fields, none tidak diekspor lagi dari sini
