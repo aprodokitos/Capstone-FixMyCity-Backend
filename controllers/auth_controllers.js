@@ -57,7 +57,7 @@ async function registerUser(req, res) {
     if (isLoginAfterRegister) {
       const token = jwt.sign(
         { id_user: newUser.id_user, role: newUser.role },
-        process.env.JWT_SECRET,
+        process.env.JWT_SECRET_KEY,
         { expiresIn: "1h" }
       );
       return res
@@ -130,15 +130,14 @@ async function login(req, res) {
     const id_user = dataUser.id_user;
     const userRole = dataUser.role.role_name;
 
-    console.log("JWT SIGNING KEY:", process.env.JWT_SECRET_KEY); // <<< Tambahkan ini
+    console.log("JWT SIGNING KEY:", process.env.JWT_SECRET_KEY); 
 
     const token = jwt.sign(
       { id_user, role: userRole },
-      process.env.JWT_SECRET_KEY, // Pastikan ini sesuai
+      process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
     );
 
-    // tidak menyertakan password pada response
     delete dataUser.user_password;
     dataUser.role = userRole;
 
@@ -166,7 +165,6 @@ async function login(req, res) {
 
 async function logout(req, res, next) {
   try {
-    // Check if token exists in cookies
     const token = req.signedCookies.token;
 
     if (!token) {
@@ -176,7 +174,6 @@ async function logout(req, res, next) {
       });
     }
 
-    // Clear the token
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production" || false,
