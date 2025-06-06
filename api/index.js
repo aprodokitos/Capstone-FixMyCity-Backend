@@ -32,11 +32,6 @@ app.use(cors({
 
 
 app.use(cookieParser(process.env.JWT_SECRET_KEY));
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: true, 
-  sameSite: "None", 
-});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
