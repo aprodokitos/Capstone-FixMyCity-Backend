@@ -9,6 +9,9 @@
         {
         "url": "http://localhost:3000",
         "description": ""
+        },
+        {
+          "url": "https://backend-fixmycity.vercel.app"
         }
     ],
     "paths": {

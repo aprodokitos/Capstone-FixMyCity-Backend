@@ -1,5 +1,4 @@
-// file index.js
-require("dotenv").config(); 
+require("dotenv").config();
 
 const express = require("express");
 const Router = require("../Routes");
@@ -11,11 +10,11 @@ const path = require("path");
 
 const app = express();
 
-
 const allowedOrigins = process.env.FRONTEND_ORIGIN?.split(",") || [
   "http://localhost:5173",
   "https://capstone-fixmycity-p7qrmpb0a-tyesds-projects.vercel.app",
 ];
+
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -25,23 +24,47 @@ app.use(cors({
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }));
+
+
+app.options("*", cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
+
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
+  next();
+});
 
 app.use(cookieParser(process.env.JWT_SECRET_KEY));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger
+
 const swaggerDocument = JSON.parse(fs.readFileSync(path.join(__dirname, "docs", "api-docs.json"), "utf8"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Static upload folder
+
 app.use("/uploads", express.static("public/uploads"));
 
-// Routes
+
 app.use(Router);
 
 app.get("/", (req, res) => {
