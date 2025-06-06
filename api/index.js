@@ -12,7 +12,7 @@ const app = express();
 
 const allowedOrigins = process.env.FRONTEND_ORIGIN?.split(",") || [
   "http://localhost:5173",
-  "https://capstone-fixmycity-p7qrmpb0a-tyesds-projects.vercel.app",
+  "https://capstone-fixmycity.vercel.app",
 ];
 
 
