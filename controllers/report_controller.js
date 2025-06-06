@@ -13,13 +13,11 @@ const createReport = async (req, res) => {
 
     if (file) {
       try {
-        console.log(`Memulai upload Cloudinary untuk file: ${file.originalname}`);
         imageUrl = await uploadToCloudinary(
           file.buffer,
           "reports",
           file.originalname
         );
-        console.log(`Berhasil mengupload ke Cloudinary: ${imageUrl}`);
       } catch (uploadError) {
         console.error("Error mengupload gambar ke Cloudinary:", uploadError);
         return res
@@ -27,9 +25,6 @@ const createReport = async (req, res) => {
           .json({ error: uploadError.message || "Gagal mengupload gambar." });
       }
     }
-
-    console.log("--- Upload Cloudinary selesai, melanjutkan ke DB create ---");
-    console.log("Data yang akan disimpan:", { title, description, location, imageUrl, userId, status: status || "PENDING" });
 
     const report = await prisma.report.create({
       data: {
@@ -41,8 +36,6 @@ const createReport = async (req, res) => {
         status: status || "PENDING",
       },
     });
-
-    console.log("--- DB create selesai, laporan disimpan dengan ID:", report.id);
 
     res.status(201).json(report);
   } catch (err) {
@@ -108,9 +101,9 @@ const updateReport = async (req, res) => {
     }
 
     const { title, description, location, status } = req.body;
-    const file = req.file; // File baru jika diupload (dari Multer memoryStorage)
+    const file = req.file;
 
-    const userRole = req.user.role; // Dari middleware verifyToken
+    const userRole = req.user.role;
 
     const updateData = {}; // Field yang bisa diupdate oleh SIAPA SAJA
 
@@ -145,7 +138,7 @@ const updateReport = async (req, res) => {
     if (file) {
       const existingReport = await prisma.report.findUnique({
         where: { id: parsedId },
-        select: { imageUrl: true }, // Ambil hanya field imageUrl
+        select: { imageUrl: true },
       });
 
       if (existingReport && existingReport.imageUrl) {
@@ -158,14 +151,14 @@ const updateReport = async (req, res) => {
             console.error(
               `Failed to delete old image ${publicId} from Cloudinary:`,
               deleteError
-            ); // Mungkin ingin memberi peringatan ke user tapi tidak menghentikan proses update
+            ); 
           }
         } else {
           console.warn(
             `Could not extract public ID from old image URL: ${existingReport.imageUrl}`
           );
         }
-      } // Upload gambar baru ke Cloudinary
+      }
 
       try {
         const newImageUrl = await uploadToCloudinary(
@@ -173,10 +166,9 @@ const updateReport = async (req, res) => {
           "reports",
           file.originalname
         );
-        updateData.imageUrl = newImageUrl; // Set URL gambar baru untuk diupdate di database
+        updateData.imageUrl = newImageUrl; 
       } catch (uploadError) {
-        // Jika upload gambar baru gagal
-        console.error("Error uploading new image to Cloudinary:", uploadError); // Batalkan proses update karena gambar baru tidak bisa diupload
+        console.error("Error uploading new image to Cloudinary:", uploadError); 
         return res.status(500).json({
           error: uploadError.message || "Gagal mengupload gambar baru.",
         });
@@ -194,16 +186,12 @@ const updateReport = async (req, res) => {
           .status(400)
           .json({ error: "Tidak ada data yang dikirim untuk diupdate." });
       }
-    } // Lakukan update ke database
-
-    console.log("--- Proceeding to DB update ---"); // Log Sebelum DB Update
+    } 
 
     const updated = await prisma.report.update({
       where: { id: parsedId },
       data: updateData,
     });
-
-    console.log("--- DB update finished, sending response ---"); // Log Setelah DB Update
 
     res.json(updated);
   } catch (err) {
@@ -225,8 +213,7 @@ const deleteReport = async (req, res) => {
     if (isNaN(parsedId)) {
       return res.status(400).json({ error: "ID laporan tidak valid." });
     }
-    
-    // Ambil data laporan sebelum dihapus untuk mendapatkan URL gambar
+
     const existingReport = await prisma.report.findUnique({
       where: { id: parsedId },
       select: { imageUrl: true },
@@ -235,8 +222,7 @@ const deleteReport = async (req, res) => {
     if (!existingReport) {
       return res.status(404).json({ error: "Laporan tidak ditemukan." });
     }
-    
-    // Hapus gambar dari Cloudinary jika ada
+
     if (existingReport.imageUrl) {
       const publicId = extractPublicId(existingReport.imageUrl);
       if (publicId) {
@@ -248,7 +234,6 @@ const deleteReport = async (req, res) => {
             `Failed to delete image ${publicId} from Cloudinary:`,
             deleteError
           );
-          // Lanjutkan proses hapus meskipun image gagal dihapus dari Cloudinary
         }
       } else {
         console.warn(
@@ -256,8 +241,7 @@ const deleteReport = async (req, res) => {
         );
       }
     }
-    
-    // Hapus laporan dari database
+
     await prisma.report.delete({ where: { id: parsedId } });
     
     res.json({ message: "Laporan dan gambar terkait berhasil dihapus." });

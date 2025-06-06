@@ -1,5 +1,3 @@
-// middleware/create-user-validation.js
-
 const Joi = require("joi");
 
 const userSchema = Joi.object({
