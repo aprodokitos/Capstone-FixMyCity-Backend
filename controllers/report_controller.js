@@ -165,7 +165,7 @@ const updateReport = async (req, res) => {
             `Could not extract public ID from old image URL: ${existingReport.imageUrl}`
           );
         }
-      } // Upload gambar baru ke Cloudinary
+      } 
 
       try {
         const newImageUrl = await uploadToCloudinary(
@@ -173,9 +173,8 @@ const updateReport = async (req, res) => {
           "reports",
           file.originalname
         );
-        updateData.imageUrl = newImageUrl; // Set URL gambar baru untuk diupdate di database
+        updateData.imageUrl = newImageUrl; 
       } catch (uploadError) {
-        // Jika upload gambar baru gagal
         console.error("Error uploading new image to Cloudinary:", uploadError); // Batalkan proses update karena gambar baru tidak bisa diupload
         return res.status(500).json({
           error: uploadError.message || "Gagal mengupload gambar baru.",
@@ -194,16 +193,16 @@ const updateReport = async (req, res) => {
           .status(400)
           .json({ error: "Tidak ada data yang dikirim untuk diupdate." });
       }
-    } // Lakukan update ke database
+    } 
 
-    console.log("--- Proceeding to DB update ---"); // Log Sebelum DB Update
+    console.log("--- Proceeding to DB update ---"); 
 
     const updated = await prisma.report.update({
       where: { id: parsedId },
       data: updateData,
     });
 
-    console.log("--- DB update finished, sending response ---"); // Log Setelah DB Update
+    console.log("--- DB update finished, sending response ---"); 
 
     res.json(updated);
   } catch (err) {
@@ -226,7 +225,7 @@ const deleteReport = async (req, res) => {
       return res.status(400).json({ error: "ID laporan tidak valid." });
     }
     
-    // Ambil data laporan sebelum dihapus untuk mendapatkan URL gambar
+    
     const existingReport = await prisma.report.findUnique({
       where: { id: parsedId },
       select: { imageUrl: true },
@@ -236,7 +235,7 @@ const deleteReport = async (req, res) => {
       return res.status(404).json({ error: "Laporan tidak ditemukan." });
     }
     
-    // Hapus gambar dari Cloudinary jika ada
+   
     if (existingReport.imageUrl) {
       const publicId = extractPublicId(existingReport.imageUrl);
       if (publicId) {
@@ -248,7 +247,6 @@ const deleteReport = async (req, res) => {
             `Failed to delete image ${publicId} from Cloudinary:`,
             deleteError
           );
-          // Lanjutkan proses hapus meskipun image gagal dihapus dari Cloudinary
         }
       } else {
         console.warn(
@@ -257,7 +255,6 @@ const deleteReport = async (req, res) => {
       }
     }
     
-    // Hapus laporan dari database
     await prisma.report.delete({ where: { id: parsedId } });
     
     res.json({ message: "Laporan dan gambar terkait berhasil dihapus." });
