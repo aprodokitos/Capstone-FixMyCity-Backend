@@ -296,4 +296,5 @@ module.exports = {
   getReportById,
   updateReport,
   deleteReport,
+  getReportsByUserId
 };
