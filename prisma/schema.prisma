@@ -14,26 +14,26 @@ datasource db {
 }
 
 model User {
-  id_user       String    @id @default(uuid()) 
-  user_name     String
-  user_birthday DateTime
-  user_email    String    @unique
-  user_password String
-  user_profile  String?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  deleted_at    DateTime?
+  id_user         String      @id @default(uuid()) 
+  user_name       String
+  user_birthday   DateTime
+  user_email      String      @unique
+  user_password   String
+  user_profile    String?
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  deleted_at      DateTime?
 
-  role_id       String
-  role          Role      @relation(fields: [role_id], references: [id_role])
-  reports       Report[]
-  comments      Comment[] 
+  role_id         String
+  role            Role        @relation(fields: [role_id], references: [id_role])
+  reports         Report[]
+  comments        Comment[]   
 }
 
 model Role {
-  id_role   String @id @default(uuid())
-  role_name String @unique   
-  users     User[]  
+  id_role         String      @id @default(uuid())
+  role_name       String      @unique  
+  users           User[]   
 }
 
 enum ReportStatus {
@@ -43,25 +43,25 @@ enum ReportStatus {
 }
 
 model Report {
-  id          Int          @id @default(autoincrement())
+  id          String           @id @default(uuid())
   title       String
   description String
   location    String
   imageUrl    String?
-  status      ReportStatus @default(PENDING)
+  status      ReportStatus  @default(PENDING)
   userId      String
-  user        User         @relation(fields: [userId], references: [id_user])
+  user        User          @relation(fields: [userId], references: [id_user])
   comments    Comment[]
-  createdAt   DateTime     @default(now())
+  createdAt   DateTime      @default(now())
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(uuid())
   text      String
   imageUrl  String?
-  reportId  Int
+  reportId  String
   userId    String
   user      User     @relation(fields: [userId], references: [id_user])
-  report    Report   @relation(fields: [reportId], references: [id], onDelete: Cascade) 
+  report    Report   @relation(fields: [reportId], references: [id])
   createdAt DateTime @default(now())
 }
