@@ -54,7 +54,7 @@
         }
       }
     },
-    "/report/{id}": {
+    "/report/:id": {
       "get": {
         "summary": "Melihat laporan berdasarkan ID user",
         "tags": ["Report"],
@@ -119,6 +119,25 @@
         }
       }
     },
+    "/report/user/:userId": {
+      "get": {
+        "summary": "Melihat semua laporan berdasarkan ID user (dapat dilihat di dashboard)",
+        "tags": ["Report"],
+        "parameters": [
+           {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar laporan user ditemukan"
+        }
+      }
+    }
+  },
     "/comment": {
       "get": {
         "summary": "Melihat semua komentar yang ada",
@@ -155,7 +174,7 @@
         }
       }
     },
-    "/comment/{id}": {
+    "/comment/:id": {
       "get": {
         "summary": "Melihat sebuah komentar berdasarkan ID user",
         "tags": ["Comment"]
@@ -193,7 +212,7 @@
         "tags": ["User"]
       }
     },
-    "/user/{id}": {
+    "/user/:id": {
       "get": {
         "summary": "Melihat akun yang ada berdasarkan ID user",
         "tags": ["User"]
