@@ -18,6 +18,7 @@ const createReport = async (req, res) => {
           "reports",
           file.originalname
         );
+        // imageUrl di sini SUDAH berupa URL lengkap dari Cloudinary (misal: https://res.cloudinary.com/...)
       } catch (uploadError) {
         console.error("Error mengupload gambar ke Cloudinary:", uploadError);
         return res
@@ -31,7 +32,7 @@ const createReport = async (req, res) => {
         title,
         description,
         location,
-        imageUrl,
+        imageUrl, // Simpan URL Cloudinary apa adanya
         userId,
         status: status || "PENDING",
       },
@@ -63,9 +64,11 @@ const getReportById = async (req, res) => {
       return res.status(404).json({ error: "Laporan tidak ditemukan" });
     }
 
-    if (report.imageUrl) {
-      report.imageUrl = `${req.protocol}://${req.get("host")}${report.imageUrl}`;
-    }
+    // --- HAPUS BARIS INI ---
+    // if (report.imageUrl) {
+    //   report.imageUrl = `${req.protocol}://${req.get("host")}${report.imageUrl}`;
+    // }
+    // --- HAPUS BARIS INI ---
 
     res.json(report);
   } catch (err) {
@@ -80,10 +83,12 @@ const getAllReports = async (req, res) => {
     });
 
     const updatedReports = reports.map((report) => {
-      if (report.imageUrl) {
-        report.imageUrl = `${req.protocol}://${req.get("host")}${report.imageUrl}`;
-      }
-      return report;
+      // --- HAPUS BARIS INI ---
+      // if (report.imageUrl) {
+      //   report.imageUrl = `${req.protocol}://${req.get("host")}${report.imageUrl}`;
+      // }
+      // --- HAPUS BARIS INI ---
+      return report; // Hanya kembalikan laporan apa adanya
     });
 
     res.json(updatedReports);
@@ -151,7 +156,7 @@ const updateReport = async (req, res) => {
             console.error(
               `Failed to delete old image ${publicId} from Cloudinary:`,
               deleteError
-            ); 
+            );
           }
         } else {
           console.warn(
@@ -166,15 +171,19 @@ const updateReport = async (req, res) => {
           "reports",
           file.originalname
         );
-        updateData.imageUrl = newImageUrl; 
+        updateData.imageUrl = newImageUrl; // Simpan URL Cloudinary apa adanya
       } catch (uploadError) {
-        console.error("Error uploading new image to Cloudinary:", uploadError); 
+        console.error("Error uploading new image to Cloudinary:", uploadError);
         return res.status(500).json({
           error: uploadError.message || "Gagal mengupload gambar baru.",
         });
       }
     } else {
+      // Jika tidak ada file baru diupload, pastikan imageUrl tidak di-reset
+      // Anda mungkin ingin menambahkan logika untuk menghapus gambar jika request.body.imageUrl = null/empty string
+      // Tapi untuk saat ini, biarkan saja jika tidak ada file baru
     }
+
     if (Object.keys(updateData).length === 0) {
       if (Object.keys(req.body).length > 0 || req.file) {
         return res.status(400).json({
@@ -186,14 +195,14 @@ const updateReport = async (req, res) => {
           .status(400)
           .json({ error: "Tidak ada data yang dikirim untuk diupdate." });
       }
-    } 
+    }
 
     const updated = await prisma.report.update({
       where: { id: parsedId },
       data: updateData,
     });
 
-    console.log("--- DB update finished, sending response ---"); 
+    console.log("--- DB update finished, sending response ---");
 
     res.json(updated);
   } catch (err) {
@@ -211,22 +220,20 @@ const deleteReport = async (req, res) => {
   try {
     const { id } = req.params;
     const parsedId = parseInt(id);
-    
+
     if (isNaN(parsedId)) {
       return res.status(400).json({ error: "ID laporan tidak valid." });
     }
-    
-    
+
     const existingReport = await prisma.report.findUnique({
       where: { id: parsedId },
       select: { imageUrl: true },
     });
-    
+
     if (!existingReport) {
       return res.status(404).json({ error: "Laporan tidak ditemukan." });
     }
-    
-   
+
     if (existingReport.imageUrl) {
       const publicId = extractPublicId(existingReport.imageUrl);
       if (publicId) {
@@ -245,17 +252,17 @@ const deleteReport = async (req, res) => {
         );
       }
     }
-    
+
     await prisma.report.delete({ where: { id: parsedId } });
-    
+
     res.json({ message: "Laporan dan gambar terkait berhasil dihapus." });
   } catch (err) {
     console.error("Error deleting report:", err);
     if (err.code === "P2025") {
       return res.status(404).json({ error: "Laporan tidak ditemukan." });
     }
-    res.status(500).json({ 
-      error: err.message || "Terjadi kesalahan saat menghapus laporan." 
+    res.status(500).json({
+      error: err.message || "Terjadi kesalahan saat menghapus laporan.",
     });
   }
 };
@@ -270,22 +277,37 @@ const getReportsByUserId = async (req, res) => {
       },
       include: {
         comments: true,
+        user: { // Tambahkan include user di sini
+          select: { // Pilih field user yang ingin Anda tampilkan
+            user_name: true,
+            user_profile: true,
+            user_email: true,
+            role: {
+              select: {
+                role_name: true
+              }
+            }
+          }
+        }
       },
     });
 
     if (reports.length === 0) {
-      return res.status(404).json({ message: "Belum ada laporan dari user ini." });
+      return res.status(200).json({ success: true, data: [] }); // Kembalikan array kosong jika tidak ada laporan, bukan 404
     }
 
     const formattedReports = reports.map((report) => {
-      if (report.imageUrl) {
-        report.imageUrl = `${req.protocol}://${req.get("host")}${report.imageUrl}`;
-      }
-      return report;
+      // --- HAPUS BARIS INI ---
+      // if (report.imageUrl) {
+      //   report.imageUrl = `${req.protocol}://${req.get("host")}${report.imageUrl}`;
+      // }
+      // --- HAPUS BARIS INI ---
+      return report; // Kembalikan laporan apa adanya
     });
 
     res.status(200).json({ success: true, data: formattedReports });
   } catch (error) {
+    console.error("Error fetching reports by user ID:", error); // Lebih spesifik log error-nya
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -296,5 +318,5 @@ module.exports = {
   getReportById,
   updateReport,
   deleteReport,
-  getReportsByUserId
+  getReportsByUserId,
 };
