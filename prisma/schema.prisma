@@ -43,7 +43,7 @@ enum ReportStatus {
 }
 
 model Report {
-  id          Int           @id @default(autoincrement())
+  id          String           @id @default(uuid())
   title       String
   description String
   location    String
@@ -56,15 +56,12 @@ model Report {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(uuid())
   text      String
   imageUrl  String?
-  reportId  Int
+  reportId  String
   userId    String
   user      User     @relation(fields: [userId], references: [id_user])
   report    Report   @relation(fields: [reportId], references: [id])
   createdAt DateTime @default(now())
 }
-
-
-
