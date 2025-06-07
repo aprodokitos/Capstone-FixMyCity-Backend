@@ -260,6 +260,36 @@ const deleteReport = async (req, res) => {
   }
 };
 
+const getReportsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const reports = await prisma.report.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        comments: true,
+      },
+    });
+
+    if (reports.length === 0) {
+      return res.status(404).json({ message: "Belum ada laporan dari user ini." });
+    }
+
+    const formattedReports = reports.map((report) => {
+      if (report.imageUrl) {
+        report.imageUrl = `${req.protocol}://${req.get("host")}${report.imageUrl}`;
+      }
+      return report;
+    });
+
+    res.status(200).json({ success: true, data: formattedReports });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createReport,
   getAllReports,
