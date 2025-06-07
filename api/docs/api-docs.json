@@ -92,7 +92,7 @@
         }
       }
     },
-    "/report/{id}": {
+    "/report/:id": {
       "get": {
         "summary": "Melihat laporan berdasarkan ID laporan",
         "tags": [
@@ -206,7 +206,7 @@
         }
       }
     },
-    "/report/user/{userId}": {
+    "/report/user/:userId": {
       "get": {
         "summary": "Melihat semua laporan berdasarkan ID user (dapat dilihat di dashboard)",
         "tags": [
@@ -292,7 +292,7 @@
         }
       }
     },
-    "/comment/{id}": {
+    "/comment/:id": {
       "get": {
         "summary": "Melihat komentar berdasarkan ID komentar",
         "tags": [
@@ -451,7 +451,7 @@
         }
       }
     },
-    "/user/{id}": {
+    "/user/:id": {
       "get": {
         "summary": "Melihat user berdasarkan ID",
         "tags": [
@@ -1069,23 +1069,6 @@
         }
       },
       "Report": {
-        "type": "object",
-        "description": "Skema dasar untuk sebuah laporan",
-        "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "title": { "type": "string" },
-          "description": { "type": "string" },
-          "location": { "type": "string" },
-          "imageUrl": { "type": "string", "format": "uri", "nullable": true },
-          "status": {
-            "type": "string",
-            "enum": [ "PENDING", "DIPROSES", "SELESAI" ]
-          },
-          "userId": { "type": "string", "format": "uuid" },
-          "createdAt": { "type": "string", "format": "date-time" }
-        }
-      },
-      "ReportWithDetails": {
         "allOf": [
           { "$ref": "#/components/schemas/Report" },
           {
