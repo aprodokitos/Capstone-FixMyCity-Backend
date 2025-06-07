@@ -1,33 +1,40 @@
 {
-    "openapi": "3.0.3",
-    "info": {
-        "title": "FixMyCity Docs",
-        "version": "1.0",
-        "description": "API ini digunakan untuk website FixMyCity yang dikembangkan oleh Kelompok 9 Capstone Project."
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FixMyCity Docs",
+    "version": "1.0",
+    "description": "API ini digunakan untuk website FixMyCity yang dikembangkan oleh Kelompok 9 Capstone Project."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": ""
     },
-    "servers": [
-        {
-        "url": "http://localhost:3000",
-        "description": ""
-        },
-        {
-          "url": "https://backend-fixmycity.vercel.app"
-        }
-    ],
-    "paths": {
+    {
+      "url": "https://backend-fixmycity.vercel.app"
+    }
+  ],
+  "paths": {
     "/report": {
       "get": {
         "summary": "Melihat semua laporan yang masuk",
-        "tags": ["Report"],
+        "tags": [
+          "Report"
+        ],
         "responses": {
+          "200": {
+            "description": "Daftar semua laporan berhasil diambil"
+          },
           "500": {
-            "description": "Error message"
+            "description": "Terjadi kesalahan saat mengambil laporan"
           }
         }
       },
       "post": {
-        "summary": "Membuat laporan",
-        "tags": ["Report"],
+        "summary": "Membuat laporan baru",
+        "tags": [
+          "Report"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -35,29 +42,62 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Jalan berlubang di depan kantor"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Ada lubang besar di jalan yang dapat menyebabkan kecelakaan."
+                  },
+                  "location": {
+                    "type": "string",
+                    "example": "Jl. Merdeka No. 123"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "example": "user123"
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": "PENDING",
+                    "enum": [
+                      "PENDING",
+                      "IN_PROGRESS",
+                      "RESOLVED"
+                    ]
+                  },
                   "image": {
                     "type": "string",
                     "format": "binary"
                   }
-                }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "location",
+                  "userId"
+                ]
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "DB create selesai, laporan disimpan dengan ID:"
+            "description": "Laporan berhasil dibuat"
           },
-          "500" : {
-            "description": "Terjadi kesalahan saat membuat laporan."
+          "500": {
+            "description": "Terjadi kesalahan saat membuat laporan"
           }
         }
       }
     },
-    "/report/:id": {
+    "/report/{id}": {
       "get": {
-        "summary": "Melihat laporan berdasarkan ID user",
-        "tags": ["Report"],
+        "summary": "Melihat laporan berdasarkan ID laporan",
+        "tags": [
+          "Report"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -69,14 +109,19 @@
           }
         ],
         "responses": {
-          "400": {
+          "200": {
+            "description": "Laporan ditemukan"
+          },
+          "404": {
             "description": "Laporan tidak ditemukan"
           }
         }
       },
       "put": {
-        "summary": "Memperbarui/mengubah laporan berdasarkan ID user",
-        "tags": ["Report"],
+        "summary": "Memperbarui laporan berdasarkan ID laporan",
+        "tags": [
+          "Report"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -87,77 +132,34 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Updated"
-          },
-          "500": {
-            "description": "Gagal mengupload gambar baru."
-          }
-        }
-      },
-      "delete": {
-        "summary": "Menghapus laporan",
-        "tags": ["Report"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Deleted"
-          },
-          "500":{
-            "description": "Terjadi kesalahan saat menghapus laporan."
-          }
-        }
-      }
-    },
-    "/report/user/:userId": {
-      "get": {
-        "summary": "Melihat semua laporan berdasarkan ID user (dapat dilihat di dashboard)",
-        "tags": ["Report"],
-        "parameters": [
-           {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Daftar laporan user ditemukan"
-        }
-      }
-    }
-  },
-    "/comment": {
-      "get": {
-        "summary": "Melihat semua komentar yang ada",
-        "tags": ["Comment"],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      },
-      "post": {
-        "summary": "Membuat sebuah komentar",
-        "tags": ["Comment"],
         "requestBody": {
-          "required": true,
+          "required": false,
           "content": {
             "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Update judul laporan"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Update deskripsi"
+                  },
+                  "location": {
+                    "type": "string",
+                    "example": "Update lokasi"
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": "IN_PROGRESS",
+                    "enum": [
+                      "PENDING",
+                      "IN_PROGRESS",
+                      "RESOLVED"
+                    ]
+                  },
                   "image": {
                     "type": "string",
                     "format": "binary"
@@ -168,94 +170,979 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Comment created"
+          "200": {
+            "description": "Laporan berhasil diperbarui"
+          },
+          "400": {
+            "description": "Permintaan tidak valid"
+          },
+          "500": {
+            "description": "Terjadi kesalahan saat memperbarui laporan"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Menghapus laporan berdasarkan ID laporan",
+        "tags": [
+          "Report"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Laporan berhasil dihapus"
+          },
+          "500": {
+            "description": "Terjadi kesalahan saat menghapus laporan"
           }
         }
       }
     },
-    "/comment/:id": {
+    "/report/user/{userId}": {
       "get": {
-        "summary": "Melihat sebuah komentar berdasarkan ID user",
-        "tags": ["Comment"]
+        "summary": "Melihat semua laporan berdasarkan ID user (dapat dilihat di dashboard)",
+        "tags": [
+          "Report"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar laporan user ditemukan"
+          }
+        }
+      }
+    },
+    "/comment": {
+      "get": {
+        "summary": "Melihat semua komentar yang ada",
+        "tags": [
+          "Comment"
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mengambil daftar komentar"
+          },
+          "500": {
+            "description": "Terjadi kesalahan saat mengambil komentar"
+          }
+        }
+      },
+      "post": {
+        "summary": "Membuat komentar baru",
+        "tags": [
+          "Comment"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "example": "Komentar saya mengenai laporan ini."
+                  },
+                  "reportId": {
+                    "type": "string",
+                    "example": "clx123abc456"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "example": "user123"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reportId",
+                  "userId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Komentar berhasil dibuat"
+          },
+          "500": {
+            "description": "Terjadi kesalahan saat membuat komentar"
+          }
+        }
+      }
+    },
+    "/comment/{id}": {
+      "get": {
+        "summary": "Melihat komentar berdasarkan ID komentar",
+        "tags": [
+          "Comment"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Komentar ditemukan"
+          },
+          "404": {
+            "description": "Komentar tidak ditemukan"
+          },
+          "500": {
+            "description": "Terjadi kesalahan saat mengambil komentar"
+          }
+        }
       },
       "put": {
-        "summary": "Memperbarui/mengubah komentar berdasarkan ID user",
-        "tags": ["Comment"]
+        "summary": "Memperbarui komentar berdasarkan ID komentar",
+        "tags": [
+          "Comment"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "example": "Perbarui isi komentar saya."
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Komentar berhasil diperbarui"
+          },
+          "404": {
+            "description": "Komentar tidak ditemukan"
+          },
+          "500": {
+            "description": "Terjadi kesalahan saat memperbarui komentar"
+          }
+        }
       },
       "delete": {
-        "summary": "Menghapus Komentar",
-        "tags": ["Comment"]
+        "summary": "Menghapus komentar berdasarkan ID komentar",
+        "tags": [
+          "Comment"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Komentar berhasil dihapus"
+          },
+          "404": {
+            "description": "Komentar tidak ditemukan"
+          },
+          "500": {
+            "description": "Terjadi kesalahan saat menghapus komentar"
+          }
+        }
       }
     },
-    "/user/login": {
-      "post": {
-        "summary": "User login",
-        "tags": ["Auth"]
-      }
-    },
-    "/user/logout": {
-      "post": {
-        "summary": "User logout",
-        "tags": ["Auth"]
-      }
-    },
-    "/user/new": {
-      "post": {
-        "summary": "Mendaftarkan/membuat akun baru",
-        "tags": ["User"]
-      }
-    },
-    "/user/all": {
+    "/user": {
       "get": {
-        "summary": "Melihat daftar semua akun yang ada",
-        "tags": ["User"]
+        "summary": "Melihat semua user yang terdaftar",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar user berhasil diambil"
+          }
+        }
+      },
+      "post": {
+        "summary": "Membuat user baru",
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Nama User"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  }
+                },
+                "required": [
+                  "email",
+                  "name",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User berhasil dibuat"
+          },
+          "400": {
+            "description": "Data user tidak valid"
+          }
+        }
       }
     },
-    "/user/:id": {
+    "/user/{id}": {
       "get": {
-        "summary": "Melihat akun yang ada berdasarkan ID user",
-        "tags": ["User"]
+        "summary": "Melihat user berdasarkan ID",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User ditemukan"
+          },
+          "404": {
+            "description": "User tidak ditemukan"
+          }
+        }
       },
       "put": {
-        "summary": "Memperbarui/mengubah akun berdasarkan ID user",
-        "tags": ["User"]
+        "summary": "Memperbarui data user berdasarkan ID",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "newemail@example.com"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Nama Baru"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "newpassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User berhasil diperbarui"
+          },
+          "400": {
+            "description": "Data user tidak valid"
+          },
+          "404": {
+            "description": "User tidak ditemukan"
+          }
+        }
       },
       "delete": {
-        "summary": "Menghapus akun yang ada",
-        "tags": ["User"]
+        "summary": "Menghapus user berdasarkan ID",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User berhasil dihapus"
+          },
+          "404": {
+            "description": "User tidak ditemukan"
+          }
+        }
       }
     },
-    "/search/title": {
-      "get": {
-        "summary": "Mencari berdasarkan judul",
-        "tags": ["Search"]
+    "/auth/register": {
+      "post": {
+        "summary": "Registrasi pengguna baru",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_name": {
+                    "type": "string",
+                    "example": "agus"
+                  },
+                  "user_birthday": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "1990-01-01"
+                  },
+                  "user_email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "agus@mail.com"
+                  },
+                  "user_password": {
+                    "type": "string",
+                    "example": "secret123"
+                  },
+                  "isLoginAfterRegister": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                },
+                "required": [
+                  "user_name",
+                  "user_email",
+                  "user_password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Berhasil mendaftarkan pengguna baru",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Successfully registered and logged in",
+                  "data": {
+                    "user_name": "agus",
+                    "user_email": "agus@mail.com"
+                  },
+                  "token": "jwt.token.here"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input data tidak lengkap atau email sudah terdaftar",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Email sudah ada. Masuk atau gunakan email lain untuk mendaftar"
+                }
+              }
+            }
+          }
+        }
       }
     },
-    "/search/location": {
-      "get": {
-        "summary": "Mencari berdasarkan lokasi",
-        "tags": ["Search"]
+    "/auth/login": {
+      "post": {
+        "summary": "Login pengguna",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "agus@mail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "secret123"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Berhasil login",
+                  "data": {
+                    "id_user": 1,
+                    "user_name": "agus",
+                    "user_birthday": "1990-01-01T00:00:00.000Z",
+                    "user_email": "agus@mail.com",
+                    "role": "user",
+                    "deleted_at": null
+                  },
+                  "token": "jwt.token.here"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email atau password salah / tidak diisi",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Password tidak valid"
+                }
+              }
+            }
+          }
+        }
       }
     },
-    "/search/status": {
-      "get": {
-        "summary": "Mencari berdasarkan status",
-        "tags": ["Search"]
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout pengguna",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout berhasil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Successfully logged out"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak ada sesi login aktif",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "No active session found"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/search/user": {
       "get": {
-        "summary": "Mencari berdasarkan akun",
-        "tags": ["Search"]
+        "summary": "Cari laporan berdasarkan nama user",
+        "tags": [
+          "Search"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": true,
+            "description": "Kata kunci pencarian pada nama user user",
+            "schema": {
+              "type": "string",
+              "example": "agus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar laporan yang ditemukan berdasarkan user"
+          },
+          "400": {
+            "description": "Kata kunci pencarian tidak disediakan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Masukkan kata kunci pencarian"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tidak ada laporan yang ditemukan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Tidak ada laporan yang ditemukan"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan server saat mencari laporan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Gagal mencari laporan",
+                  "error": "Error message here"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/title": {
+      "get": {
+        "summary": "Cari laporan berdasarkan judul",
+        "tags": [
+          "Search"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": true,
+            "description": "Kata kunci pencarian pada judul laporan",
+            "schema": {
+              "type": "string",
+              "example": "jalan rusak"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar laporan yang ditemukan berdasarkan judul",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "location": {
+                            "type": "string"
+                          },
+                          "imageUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "user": {
+                            "type": "object",
+                            "properties": {
+                              "user_name": {
+                                "type": "string"
+                              },
+                              "user_email": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Kata kunci pencarian tidak disediakan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Masukkan kata kunci pencarian"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tidak ada laporan yang ditemukan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Tidak ada laporan yang ditemukan"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan server saat mencari laporan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Gagal mencari laporan",
+                  "error": "Error message here"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/location": {
+      "get": {
+        "summary": "Cari laporan berdasarkan lokasi",
+        "tags": [
+          "Search"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": true,
+            "description": "Kata kunci pencarian pada lokasi laporan",
+            "schema": {
+              "type": "string",
+              "example": "Jakarta"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar laporan yang ditemukan berdasarkan lokasi"
+          },
+          "400": {
+            "description": "Kata kunci pencarian tidak disediakan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Masukkan kata kunci pencarian"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tidak ada laporan yang ditemukan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Tidak ada laporan yang ditemukan"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan server saat mencari laporan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Gagal mencari laporan",
+                  "error": "Error message here"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/status": {
+      "get": {
+        "summary": "Cari laporan berdasarkan status",
+        "tags": [
+          "Search"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": true,
+            "description": "Status laporan (HARUS menggunakan uppercase, contoh: OPEN, CLOSED, IN_PROGRESS)",
+            "schema": {
+              "type": "string",
+              "example": "OPEN"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar laporan yang ditemukan berdasarkan status"
+          },
+          "400": {
+            "description": "Kata kunci pencarian tidak disediakan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Masukkan kata kunci pencarian"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tidak ada laporan yang ditemukan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Tidak ada laporan yang ditemukan"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Kesalahan server saat mencari laporan",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Gagal mencari laporan",
+                  "error": "Error message here"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id_role": { "type": "string", "format": "uuid" },
+          "role_name": { "type": "string" }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "description": "Skema data User untuk respons API (tanpa password)",
+        "properties": {
+          "id_user": { "type": "string", "format": "uuid" },
+          "user_name": { "type": "string" },
+          "user_birthday": { "type": "string", "format": "date-time" },
+          "user_email": { "type": "string", "format": "email" },
+          "user_profile": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "role": { "$ref": "#/components/schemas/Role" }
+        }
+      },
+      "UserCreate": {
+        "type": "object",
+        "description": "Skema untuk membuat User baru",
+        "properties": {
+          "user_name": { "type": "string", "example": "John Doe" },
+          "user_birthday": { "type": "string", "format": "date", "example": "1995-08-17" },
+          "user_email": { "type": "string", "format": "email", "example": "john.doe@example.com" },
+          "user_password": { "type": "string", "format": "password", "example": "securePassword123" },
+          "user_profile": { "type": "string", "nullable": true, "example": "URL to profile image" },
+          "role_id": { "type": "string", "format": "uuid", "description": "ID dari role yang akan diassign" }
+        },
+        "required": [ "user_name", "user_birthday", "user_email", "user_password", "role_id" ]
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "text": { "type": "string" },
+          "imageUrl": { "type": "string", "format": "uri", "nullable": true },
+          "reportId": { "type": "string", "format": "uuid" },
+          "userId": { "type": "string", "format": "uuid" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "user": { "$ref": "#/components/schemas/UserResponse" }
+        }
+      },
+      "Report": {
+        "type": "object",
+        "description": "Skema dasar untuk sebuah laporan",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "location": { "type": "string" },
+          "imageUrl": { "type": "string", "format": "uri", "nullable": true },
+          "status": {
+            "type": "string",
+            "enum": [ "PENDING", "DIPROSES", "SELESAI" ]
+          },
+          "userId": { "type": "string", "format": "uuid" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ReportWithDetails": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Report" },
+          {
+            "type": "object",
+            "properties": {
+              "user": { "$ref": "#/components/schemas/UserResponse" },
+              "comments": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          }
+        ]
+      },
+      "ReportCreate": {
+        "type": "object",
+        "description": "Skema untuk membuat Laporan baru",
+        "properties": {
+          "title": { "type": "string", "example": "Jalan Berlubang di Sudirman" },
+          "description": { "type": "string", "example": "Ada lubang yang cukup dalam dan berbahaya bagi pengendara motor." },
+          "location": { "type": "string", "example": "Jl. Jenderal Sudirman Kav. 52-53, Jakarta" },
+          "image": { "type": "string", "format": "binary", "description": "File gambar laporan" },
+          "userId": { "type": "string", "format": "uuid", "example": "a1b2c3d4-..." }
+        },
+        "required": [ "title", "description", "location", "userId" ]
+      },
+      "ReportUpdate": {
+        "type": "object",
+        "description": "Skema untuk memperbarui Laporan",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "location": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": [ "PENDING", "DIPROSES", "SELESAI" ]
+          },
+          "image": { "type": "string", "format": "binary", "description": "File gambar baru jika ingin diubah" }
+        }
       }
     }
   },
   "tags": [
-    { "name": "Report" },
-    { "name": "Comment" },
-    { "name": "User" },
-    { "name": "Auth" },
-    { "name": "Search" }
+    {
+      "name": "Report"
+    },
+    {
+      "name": "Comment"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Search"
+    }
   ]
 }
